@@ -125,36 +125,31 @@
         const latestDataUrl = 'https://script.google.com/macros/s/AKfycbzpmWAYzzeFSndq56VOGQ2BY5-RgI3Htss_PTV5jBL8VCuP5r6JDaE0DrtJi9W3Yht1rQ/exec?action=getLastData';
 
         // Fungsi untuk mengambil data dari API
-        async function fetchData() {
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-                const latestData = data[data.length - 1];
+async function fetchData() {
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const latestData = data[data.length - 1];
 
-                // Update Last Update time
-                const formattedDate = formatDate(latestData[0]);
-                document.getElementById('lastUpdate').textContent = `Last update: ${formattedDate}`;
+        document.getElementById('lastUpdate').textContent = Last update: ${formatDate(latestData[0])};
 
-                // Update each widget with the latest data
-                updateChart(solarVoltageChart, latestData[1], 26, 'V');
-                updateChart(batteryVoltageChart, latestData[2], 18, 'V');
-                updateChart(solarCurrentChart, latestData[3], 5, 'A');
-                updateChart(batteryCurrentChart, latestData[4], 5, 'A');
-                updateChart(solarPowerChart, latestData[5], 30, 'W');
-                updateChart(outputPowerChart, latestData[6], 30, 'W');
-                updateChart(pwmPercentageChart, latestData[7], 100, '%');
-                updateChart(efficiencyChart, latestData[10], 100, '%');
+        updateChart(solarVoltageChart, parseFloat(latestData[1]) || 0, 26, 'V');
+        updateChart(batteryVoltageChart, parseFloat(latestData[2]) || 0, 18, 'V');
+        updateChart(solarCurrentChart, parseFloat(latestData[3]) || 0, 5, 'A');
+        updateChart(batteryCurrentChart, parseFloat(latestData[4]) || 0, 5, 'A');
+        updateChart(solarPowerChart, parseFloat(latestData[5]) || 0, 30, 'W');
+        updateChart(outputPowerChart, parseFloat(latestData[6]) || 0, 30, 'W');
+        updateChart(pwmPercentageChart, parseFloat(latestData[7]) || 0, 100, '%');
+        updateChart(efficiencyChart, parseFloat(latestData[10]) || 0, 100, '%');
 
-                updateModeChart(modeChart, latestData[8].trim());
-                updateLoadStatusChart(loadStatusChart, latestData[9].trim());
+        updateModeChart(modeChart, (latestData[8] || '').trim());
+        updateLoadStatusChart(loadStatusChart, (latestData[9] || '').trim());
 
-                // Fetch and update the spline chart data
-                fetchSplineData();
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
+        fetchSplineData();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
 
         // Fungsi untuk mengambil data spline chart dari API
         async function fetchSplineData() {
