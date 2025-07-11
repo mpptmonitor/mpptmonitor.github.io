@@ -231,6 +231,7 @@
 
         // Fungsi untuk mengupdate chart dengan data terbaru
         function updateChart(chart, value, maxValue, unit) {
+            const numericValue = parseFloat(value);
             const percentage = (value / maxValue) * 100;
             chart.data.datasets[0].data[0] = percentage;
             chart.data.datasets[0].data[1] = 100 - percentage;
