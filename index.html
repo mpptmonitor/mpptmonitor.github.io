@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <link rel="icon" href="ico.png" type="image/x-icon">
     <title>Data Monitoring System</title>
     <style>
@@ -52,69 +51,19 @@
     <h2 id="lastUpdate">Last update: -</h2>
 
     <div class="widget-container">
-        <!-- Solar Voltage Widget -->
-        <div class="widget">
-            <h2>Solar Voltage</h2>
-            <canvas id="solarVoltageChart"></canvas>
-        </div>
-
-        <!-- Battery Voltage Widget -->
-        <div class="widget">
-            <h2>Battery Voltage</h2>
-            <canvas id="batteryVoltageChart"></canvas>
-        </div>
-
-        <!-- Solar Current Widget -->
-        <div class="widget">
-            <h2>Solar Current</h2>
-            <canvas id="solarCurrentChart"></canvas>
-        </div>
-
-        <!-- Battery Current Widget -->
-        <div class="widget">
-            <h2>Battery Current</h2>
-            <canvas id="batteryCurrentChart"></canvas>
-        </div>
-
-        <!-- Solar Power Widget -->
-        <div class="widget">
-            <h2>Solar Power</h2>
-            <canvas id="solarPowerChart"></canvas>
-        </div>
-
-        <!-- Output Power Widget -->
-        <div class="widget">
-            <h2>Output Power</h2>
-            <canvas id="outputPowerChart"></canvas>
-        </div>
-
-        <!-- PWM Percentage Widget -->
-        <div class="widget">
-            <h2>PWM Percentage</h2>
-            <canvas id="pwmPercentageChart"></canvas>
-        </div>
-
-        <!-- Efficiency Widget -->
-        <div class="widget">
-            <h2>Efficiency</h2>
-            <canvas id="efficiencyChart"></canvas>
-        </div>
-
-        <!-- Mode Widget -->
-        <div class="widget">
-            <h2>Mode</h2>
-            <canvas id="modeChart"></canvas>
-        </div>
-
-        <!-- Load Status Widget -->
-        <div class="widget">
-            <h2>Load Status</h2>
-            <canvas id="loadStatusChart"></canvas>
-        </div>
+        <div class="widget"><h2>Solar Voltage</h2><canvas id="solarVoltageChart"></canvas></div>
+        <div class="widget"><h2>Battery Voltage</h2><canvas id="batteryVoltageChart"></canvas></div>
+        <div class="widget"><h2>Solar Current</h2><canvas id="solarCurrentChart"></canvas></div>
+        <div class="widget"><h2>Battery Current</h2><canvas id="batteryCurrentChart"></canvas></div>
+        <div class="widget"><h2>Solar Power</h2><canvas id="solarPowerChart"></canvas></div>
+        <div class="widget"><h2>Output Power</h2><canvas id="outputPowerChart"></canvas></div>
+        <div class="widget"><h2>PWM Percentage</h2><canvas id="pwmPercentageChart"></canvas></div>
+        <div class="widget"><h2>Efficiency</h2><canvas id="efficiencyChart"></canvas></div>
+        <div class="widget"><h2>Mode</h2><canvas id="modeChart"></canvas></div>
+        <div class="widget"><h2>Load Status</h2><canvas id="loadStatusChart"></canvas></div>
     </div>
 
     <h1>Spline Chart</h1>
-
     <div class="chart-container">
         <canvas id="splineChart"></canvas>
     </div>
@@ -124,66 +73,6 @@
         const apiUrl = 'https://script.google.com/macros/s/AKfycbzpmWAYzzeFSndq56VOGQ2BY5-RgI3Htss_PTV5jBL8VCuP5r6JDaE0DrtJi9W3Yht1rQ/exec?action=getStatusData';
         const latestDataUrl = 'https://script.google.com/macros/s/AKfycbzpmWAYzzeFSndq56VOGQ2BY5-RgI3Htss_PTV5jBL8VCuP5r6JDaE0DrtJi9W3Yht1rQ/exec?action=getLastData';
 
-        // Fungsi untuk mengambil data dari API
-async function fetchData() {
-    try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-        const latestData = data[data.length - 1];
-
-        document.getElementById('lastUpdate').textContent = Last update: ${formatDate(latestData[0])};
-
-        updateChart(solarVoltageChart, parseFloat(latestData[1]) || 0, 26, 'V');
-        updateChart(batteryVoltageChart, parseFloat(latestData[2]) || 0, 18, 'V');
-        updateChart(solarCurrentChart, parseFloat(latestData[3]) || 0, 5, 'A');
-        updateChart(batteryCurrentChart, parseFloat(latestData[4]) || 0, 5, 'A');
-        updateChart(solarPowerChart, parseFloat(latestData[5]) || 0, 30, 'W');
-        updateChart(outputPowerChart, parseFloat(latestData[6]) || 0, 30, 'W');
-        updateChart(pwmPercentageChart, parseFloat(latestData[7]) || 0, 100, '%');
-        updateChart(efficiencyChart, parseFloat(latestData[10]) || 0, 100, '%');
-
-        updateModeChart(modeChart, (latestData[8] || '').trim());
-        updateLoadStatusChart(loadStatusChart, (latestData[9] || '').trim());
-
-        fetchSplineData();
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
-
-        // Fungsi untuk mengambil data spline chart dari API
-        async function fetchSplineData() {
-            try {
-                const response = await fetch(latestDataUrl);
-                const data = await response.json();
-
-                const labels = data.map(item => formatDate(item[0]));
-                const solarVoltage = data.map(item => item[1]);
-                const batteryVoltage = data.map(item => item[2]);
-                const solarCurrent = data.map(item => item[3]);
-                const batteryCurrent = data.map(item => item[4]);
-                const solarPower = data.map(item => item[5]);
-                const outputPower = data.map(item => item[6]);
-                const pwmPercentage = data.map(item => item[7]);
-                const efficiency = data.map(item => item[10]);
-
-                splineChart.data.labels = labels;
-                splineChart.data.datasets[0].data = solarVoltage;
-                splineChart.data.datasets[1].data = batteryVoltage;
-                splineChart.data.datasets[2].data = solarCurrent;
-                splineChart.data.datasets[3].data = batteryCurrent;
-                splineChart.data.datasets[4].data = solarPower;
-                splineChart.data.datasets[5].data = outputPower;
-                splineChart.data.datasets[6].data = pwmPercentage;
-                splineChart.data.datasets[7].data = efficiency;
-
-                splineChart.update();
-            } catch (error) {
-                console.error('Error fetching spline data:', error);
-            }
-        }
-
-        // Inisialisasi chart.js untuk setiap widget
         const solarVoltageChart = createChart('solarVoltageChart');
         const batteryVoltageChart = createChart('batteryVoltageChart');
         const solarCurrentChart = createChart('solarCurrentChart');
@@ -195,7 +84,16 @@ async function fetchData() {
         const modeChart = createChart('modeChart');
         const loadStatusChart = createChart('loadStatusChart');
 
-        // Fungsi untuk membuat chart baru
+        Chart.register({
+            id: 'centerTextPlugin',
+            afterDraw: function (chart) {
+                if (chart.config.options.plugins.centerText &&
+                    chart.config.options.plugins.centerText.display) {
+                    drawCenterText(chart);
+                }
+            }
+        });
+
         function createChart(elementId) {
             const ctx = document.getElementById(elementId).getContext('2d');
             return new Chart(ctx, {
@@ -224,9 +122,7 @@ async function fetchData() {
             });
         }
 
-        // Fungsi untuk mengupdate chart dengan data terbaru
         function updateChart(chart, value, maxValue, unit) {
-            const numericValue = parseFloat(value);
             const percentage = (value / maxValue) * 100;
             chart.data.datasets[0].data[0] = percentage;
             chart.data.datasets[0].data[1] = 100 - percentage;
@@ -234,56 +130,35 @@ async function fetchData() {
             chart.update();
         }
 
-        // Fungsi untuk mengupdate Mode chart
         function updateModeChart(chart, mode) {
             let color;
             switch (mode) {
-                case 'BULK':
-                    color = '#36a2eb'; // Biru
-                    break;
-                case 'FLOAT':
-                    color = '#4caf50'; // Hijau
-                    break;
-                case 'ABSORPTION':
-                    color = '#ff9800'; // Oranye
-                    break;
-                default:
-                    color = '#e0e0e0'; // Default abu-abu
+                case 'BULK': color = '#36a2eb'; break;
+                case 'FLOAT': color = '#4caf50'; break;
+                case 'ABSORPTION': color = '#ff9800'; break;
+                default: color = '#e0e0e0'; mode = 'Unknown';
             }
             chart.data.datasets[0].backgroundColor[0] = color;
-            chart.data.datasets[0].data[0] = 100;
-            chart.data.datasets[0].data[1] = 0;
+            chart.data.datasets[0].data = [100, 0];
             chart.options.plugins.centerText.text = mode;
             chart.update();
         }
 
-        // Fungsi untuk mengupdate Load Status chart
         function updateLoadStatusChart(chart, status) {
-            let color;
-            if (status === 'ON') {
-                color = '#4caf50'; // Hijau
-            } else if (status === 'OFF') {
-                color = '#f44336'; // Merah
-            } else {
-                color = '#e0e0e0'; // Default abu-abu
-                status = 'Unknown';
-            }
+            let color = (status === 'ON') ? '#4caf50' : (status === 'OFF') ? '#f44336' : '#e0e0e0';
+            if (status !== 'ON' && status !== 'OFF') status = 'Unknown';
             chart.data.datasets[0].backgroundColor[0] = color;
-            chart.data.datasets[0].data[0] = 100;
-            chart.data.datasets[0].data[1] = 0;
+            chart.data.datasets[0].data = [100, 0];
             chart.options.plugins.centerText.text = status;
             chart.update();
         }
 
-        // Fungsi untuk menggambar teks di tengah chart
         function drawCenterText(chart) {
             const ctx = chart.ctx;
-            const width = chart.width;
-            const height = chart.height;
             const text = chart.config.options.plugins.centerText.text;
+            const width = chart.width, height = chart.height;
             ctx.restore();
-            const fontSize = (height / 114).toFixed(2);
-            ctx.font = `${fontSize}em sans-serif`;
+            ctx.font = `${(height / 114).toFixed(2)}em sans-serif`;
             ctx.textBaseline = 'middle';
             const textX = Math.round((width - ctx.measureText(text).width) / 2);
             const textY = height / 2;
@@ -291,70 +166,86 @@ async function fetchData() {
             ctx.save();
         }
 
-        Chart.register({
-            id: 'centerTextPlugin',
-            afterDraw: function (chart) {
-                if (chart.config.options.plugins.centerText &&
-                    chart.config.options.plugins.centerText.display) {
-                    drawCenterText(chart);
-                }
-            }
-        });
+        async function fetchData() {
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        const latestData = data[data.length - 1];
 
-        // Inisialisasi spline chart
+        document.getElementById('lastUpdate').textContent = `Last update: ${formatDate(latestData[0])}`;
+
+        updateChart(solarVoltageChart, parseFloat(latestData[1]) || 0, 26, 'V');
+        updateChart(batteryVoltageChart, parseFloat(latestData[2]) || 0, 18, 'V');
+        updateChart(solarCurrentChart, parseFloat(latestData[3]) || 0, 5, 'A');
+        updateChart(batteryCurrentChart, parseFloat(latestData[4]) || 0, 5, 'A');
+        updateChart(solarPowerChart, parseFloat(latestData[5]) || 0, 30, 'W');
+        updateChart(outputPowerChart, parseFloat(latestData[6]) || 0, 30, 'W');
+        updateChart(pwmPercentageChart, parseFloat(latestData[7]) || 0, 100, '%');
+        updateChart(efficiencyChart, parseFloat(latestData[10]) || 0, 100, '%');
+
+        updateModeChart(modeChart, (latestData[8] || '').trim());
+        updateLoadStatusChart(loadStatusChart, (latestData[9] || '').trim());
+
+        fetchSplineData();
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+
+        async function fetchSplineData() {
+            try {
+                const response = await fetch(latestDataUrl);
+                const data = await response.json();
+
+                const cleanedData = data.slice(1).filter(row => row.length > 10 && row.every(cell => cell !== "" && cell !== "#NUM!"));
+
+                const labels = cleanedData.map(item => formatDate(item[0]));
+                const solarVoltage = cleanedData.map(item => parseFloat(item[1]) || 0);
+                const batteryVoltage = cleanedData.map(item => parseFloat(item[2]) || 0);
+                const solarCurrent = cleanedData.map(item => parseFloat(item[3]) || 0);
+                const batteryCurrent = cleanedData.map(item => parseFloat(item[4]) || 0);
+                const solarPower = cleanedData.map(item => parseFloat(item[5]) || 0);
+                const outputPower = cleanedData.map(item => parseFloat(item[6]) || 0);
+                const pwmPercentage = cleanedData.map(item => parseFloat(item[7]) || 0);
+                const efficiency = cleanedData.map(item => parseFloat(item[10]) || 0);
+
+                splineChart.data.labels = labels;
+                splineChart.data.datasets[0].data = solarVoltage;
+                splineChart.data.datasets[1].data = batteryVoltage;
+                splineChart.data.datasets[2].data = solarCurrent;
+                splineChart.data.datasets[3].data = batteryCurrent;
+                splineChart.data.datasets[4].data = solarPower;
+                splineChart.data.datasets[5].data = outputPower;
+                splineChart.data.datasets[6].data = pwmPercentage;
+                splineChart.data.datasets[7].data = efficiency;
+
+                splineChart.update();
+            } catch (error) {
+                console.error('Error fetching spline data:', error);
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
         const ctx = document.getElementById('splineChart').getContext('2d');
         const splineChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [],
-                datasets: [{
-                    label: 'Solar Voltage',
-                    data: [],
-                    borderColor: '#36a2eb',
-                    fill: false
-                },
-                {
-                    label: 'Battery Voltage',
-                    data: [],
-                    borderColor: '#4caf50',
-                    fill: false
-                },
-                {
-                    label: 'Solar Current',
-                    data: [],
-                    borderColor: '#ff9800',
-                    fill: false
-                },
-                {
-                    label: 'Battery Current',
-                    data: [],
-                    borderColor: '#f44336',
-                    fill: false
-                },
-                {
-                    label: 'Solar Power',
-                    data: [],
-                    borderColor: '#9c27b0',
-                    fill: false
-                },
-                {
-                    label: 'Output Power',
-                    data: [],
-                    borderColor: '#ffeb3b',
-                    fill: false
-                },
-                {
-                    label: 'PWM Percentage',
-                    data: [],
-                    borderColor: '#00bcd4',
-                    fill: false
-                },
-                {
-                    label: 'Efficiency',
-                    data: [],
-                    borderColor: '#795548',
-                    fill: false
-                }]
+                datasets: [
+                    { label: 'Solar Voltage', data: [], borderColor: '#36a2eb', fill: false },
+                    { label: 'Battery Voltage', data: [], borderColor: '#4caf50', fill: false },
+                    { label: 'Solar Current', data: [], borderColor: '#ff9800', fill: false },
+                    { label: 'Battery Current', data: [], borderColor: '#f44336', fill: false },
+                    { label: 'Solar Power', data: [], borderColor: '#9c27b0', fill: false },
+                    { label: 'Output Power', data: [], borderColor: '#ffeb3b', fill: false },
+                    { label: 'PWM Percentage', data: [], borderColor: '#00bcd4', fill: false },
+                    { label: 'Efficiency', data: [], borderColor: '#795548', fill: false }
+                ]
             },
             options: {
                 responsive: true,
@@ -368,16 +259,7 @@ async function fetchData() {
             }
         });
 
-        // Format tanggal dan waktu
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleString();
-        }
-
-        // Ambil data saat halaman dimuat
         fetchData();
-
-        // Interval untuk memperbarui data setiap 5 menit
         setInterval(fetchData, 3000);
     </script>
 </body>
